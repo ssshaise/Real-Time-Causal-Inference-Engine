@@ -25,7 +25,4 @@ produces natural-language causal explanations.
 * Unit tests validate correctness of counterfactual engine 
 
 ## Contributors
-* Your Name 
-
-## License
-MIT 
+* Ruchir Srivastava
