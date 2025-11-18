@@ -3,16 +3,13 @@ import networkx as nx
 import logging
 from src.llm.client import CausalLLM
 
-# Configure logging to see info/warnings
 logging.basicConfig(level=logging.INFO)
 
 def run_check():
     print("1. Initializing Gemini Client...")
-    # This will pick up GEMINI_API_KEY from your .env file automatically
-    # We explicitly ask for the flash model which is fast and free-tier eligible
+
     llm = CausalLLM(model_name="gemini-2.5-flash")
 
-    # --- Test 1: Explain a Graph ---
     print("\n2. Testing Graph Explanation...")
     g = nx.DiGraph()
     g.add_edges_from([
@@ -29,7 +26,6 @@ def run_check():
     print(explanation)
     print("-------------------------------------")
 
-    # --- Test 2: Suggest Priors ---
     print("\n3. Testing Prior Suggestion...")
     domain = "Fitness Tracker Analysis"
     variables = ["Steps_Taken", "Calories_Burned", "Heart_Rate", "Hours_Slept", "Fatigue_Level"]

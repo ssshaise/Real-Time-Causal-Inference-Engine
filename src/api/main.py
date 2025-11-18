@@ -7,20 +7,17 @@ import numpy as np
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import UploadFile, File # <--- NEW
+from fastapi import UploadFile, File 
 import shutil
 from pydantic import BaseModel
 from src.utils.auth_db import create_user, verify_user, save_history, get_history, delete_history
-
-
-# Import modules
 from src.causal_discovery.discovery import CausalDiscoveryEngine
 from src.scm.estimator import CausalSCM
 from src.counterfactuals.engine import CounterfactualEngine
 from src.simulator.simulator import CausalSimulator
 from src.llm.client import CausalLLM
 from src.api.schemas import *
-from src.utils.db import Database  # Ensure this import exists
+from src.utils.db import Database 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
@@ -35,7 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- PERSISTENCE CONFIG ---
 MODEL_PATH = "data/models/latest_model.pkl"
 
 def load_active_model():
@@ -43,7 +39,6 @@ def load_active_model():
     if os.path.exists(MODEL_PATH):
         try:
             model = CausalSCM.load(MODEL_PATH)
-            # AUTO-FIX: Run the cycle breaker on the loaded graph immediately
             model.graph = make_acyclic(model.graph)
             logger.info("Model loaded and sanitized (cycles removed).")
             return model
@@ -54,7 +49,7 @@ def load_active_model():
 
 ACTIVE_MODEL = load_active_model()
 
-# --- HELPER: CYCLE BREAKER ---
+#CYCLE BREAKER 
 def make_acyclic(g: nx.DiGraph) -> nx.DiGraph:
     """
     Detects cycles and removes the back-edge to ensure DAG properties.
@@ -66,7 +61,6 @@ def make_acyclic(g: nx.DiGraph) -> nx.DiGraph:
             # Find a cycle (e.g., A -> B -> A)
             cycle = nx.find_cycle(g_copy)
             # Heuristic: Remove the last edge in the cycle sequence
-            # (In a weighted graph, we'd remove the weakest, but this is sufficient for stability)
             source, target = cycle[-1][0], cycle[-1][1]
             g_copy.remove_edge(source, target)
             logger.warning(f"Cycle detected! Removed edge {source} -> {target} to enforce DAG.")
@@ -75,7 +69,7 @@ def make_acyclic(g: nx.DiGraph) -> nx.DiGraph:
             break
     return g_copy
 
-# --- SANITIZER ---
+#SANITIZER
 def sanitize_value(v):
     if v is None: return None
     try:
@@ -88,7 +82,7 @@ def sanitize_value(v):
 def sanitize_dict(d):
     return {k: sanitize_value(v) for k, v in d.items()}
 
-# --- ENDPOINTS ---
+# ENDPOINTS 
 
 @app.get("/")
 def read_root():
@@ -98,7 +92,6 @@ def read_root():
 @app.post("/upload")
 async def upload_dataset(file: UploadFile = File(...)):
     try:
-        # Save the file to data/raw/uploaded_data.csv
         file_location = f"data/raw/{file.filename}"
         
         with open(file_location, "wb+") as file_object:
@@ -124,8 +117,6 @@ def signup(user: UserAuth):
 @app.post("/auth/login")
 def login(user: UserAuth):
     if verify_user(user.email, user.password):
-        # In a real app, we would return a JWT Token here.
-        # For MVP, we just return success and let Frontend trust the state.
         return {"status": "success", "email": user.email, "token": "fake-jwt-token-123"} 
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -141,7 +132,6 @@ def get_user_history(email: str):
 @app.post("/discover", response_model=GraphResponse)
 def discover_graph(req: DiscoveryRequest):
     try:
-        # Database Loading Logic
         try:
             db = Database()
             df = db.get_data("events")
@@ -155,7 +145,6 @@ def discover_graph(req: DiscoveryRequest):
     try:
         graph = engine.run(df)
         
-        # FIX 1: Enforce Acyclicity immediately after discovery
         graph = make_acyclic(graph)
         
         edges = [list(e) for e in graph.edges()]
@@ -180,8 +169,7 @@ def fit_scm(req: FitSCMRequest):
     g = nx.DiGraph()
     for edge in req.dag_edges:
         g.add_edge(edge[0], edge[1])
-    
-    # FIX 2: Enforce Acyclicity before training
+
     g = make_acyclic(g)
     
     scm = CausalSCM(g)
@@ -211,7 +199,6 @@ def query_counterfactual(req: CounterfactualRequest):
             for edge in req.dag_edges:
                 g.add_edge(edge[0], edge[1])
             
-            # FIX 3: Enforce Acyclicity in Auto-Train
             g = make_acyclic(g)
             
             scm = CausalSCM(g)
@@ -234,7 +221,6 @@ def query_counterfactual(req: CounterfactualRequest):
             "delta": sanitize_dict(delta)
         }
     except Exception as e:
-        # Often 'Graph contains a cycle' error from networkx
         raise HTTPException(status_code=500, detail=f"Math Error: {str(e)}")
     
 @app.post("/optimize", response_model=OptimizeResponse)
@@ -246,7 +232,6 @@ def optimize_target(req: OptimizeRequest):
     if not ACTIVE_MODEL:
          raise HTTPException(status_code=400, detail="Model not trained.")
 
-    # 1. Determine valid range for the control variable
     try:
         try:
             db = Database()
@@ -270,7 +255,7 @@ def optimize_target(req: OptimizeRequest):
     sim = CausalSimulator(ACTIVE_MODEL)
     
     for val in candidates:
-        # Run a mini-simulation for this value
+        # Runs a mini-simulation for this value
         # We use a smaller sample size (n=100) for speed during search
         df_sim = sim.run_do_query({req.control_node: val}, n_samples=100)
         pred = df_sim[req.target_node].mean()

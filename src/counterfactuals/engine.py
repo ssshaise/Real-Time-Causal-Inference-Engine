@@ -21,28 +21,23 @@ class CounterfactualEngine:
         """
         noise = {}
         
-        # 1. Create a full observation vector, filling missing values with NaN
         full_obs = pd.Series(index=self.scm.graph.nodes(), dtype=float)
         full_obs.update(observation)
         
-        # 2. Normalize (NaNs remain NaN)
         obs_norm = (full_obs - self.scm.data_stats['mean']) / self.scm.data_stats['std']
         
         for node in self.scm.graph.nodes():
             parents = list(self.scm.graph.predecessors(node))
             
-            # Predict what the node *should* be based on parents
             if not parents:
                 pred_val = 0.0 
             else:
-                # If any parent is missing (NaN), we can't predict precisely, so assume mean input (0.0)
                 parent_vals = obs_norm[parents].fillna(0.0).values.astype(np.float32)
                 model = self.scm.models[node]
                 with torch.no_grad():
                     pred_tensor = model(torch.tensor(parent_vals, dtype=torch.float32))
                     pred_val = pred_tensor.item()
-            
-            # Calculate Noise (Residual)
+
             # If we observed the node, Noise = Actual - Predicted
             if not pd.isna(obs_norm[node]):
                 noise[node] = obs_norm[node] - pred_val
@@ -55,10 +50,8 @@ class CounterfactualEngine:
     def estimate_counterfactual(self, 
                                 observation: pd.Series, 
                                 intervention: dict) -> pd.Series:
-        # 1. Abduction
         u_noise = self._abduct_noise(observation)
         
-        # 2. Action (Modify graph)
         # Start state: Use observation if available, otherwise use Mean (0.0 normalized)
         current_state = pd.Series(index=self.scm.graph.nodes(), dtype=float)
         full_obs = pd.Series(index=self.scm.graph.nodes(), dtype=float)
@@ -82,7 +75,6 @@ class CounterfactualEngine:
                 
             parents = list(self.scm.graph.predecessors(node))
             if not parents:
-                # If root node & not intervened, it keeps its original value (observed or mean)
                 continue
             
             parent_vals = current_state[parents].values.astype(np.float32)
@@ -90,8 +82,7 @@ class CounterfactualEngine:
             
             with torch.no_grad():
                 pred_effect = model(torch.tensor(parent_vals, dtype=torch.float32)).item()
-            
-            # New Value = Predicted Effect + Old Noise
+
             current_state[node] = pred_effect + u_noise[node]
 
         # De-normalize

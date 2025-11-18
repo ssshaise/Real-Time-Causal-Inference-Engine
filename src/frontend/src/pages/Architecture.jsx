@@ -35,18 +35,18 @@ export default function Architecture() {
                 transition={{ delay: i * 0.2 }}
                 className="flex flex-col md:flex-row items-center gap-8 group"
               >
-                {/* Content Card */}
+                {/*Content Card*/}
                 <div className={`flex-1 p-6 rounded-2xl border border-gray-800 bg-[#111] hover:border-gray-600 transition-all ${i % 2 === 0 ? 'md:text-right' : 'md:order-2 md:text-left'}`}>
                   <h3 className="text-2xl font-bold mb-2">{s.title}</h3>
                   <p className="text-gray-400">{s.desc}</p>
                 </div>
 
-                {/* Center Icon */}
+                {/*Center Icon*/}
                 <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg shadow-white/5 ${s.color} shrink-0 z-10`}>
                   {s.icon}
                 </div>
 
-                {/* Spacer for layout balance */}
+                {/*Spacer for layout balance*/}
                 <div className="flex-1 hidden md:block"></div>
               </motion.div>
             ))}

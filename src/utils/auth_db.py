@@ -4,7 +4,6 @@ import json
 from datetime import datetime
 from passlib.context import CryptContext
 
-# CHANGE: Using 'argon2' scheme instead of 'bcrypt'
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 DB_PATH = "data/users.db"
 
@@ -23,7 +22,6 @@ def create_user(email, password, full_name):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     try:
-        # Argon2 handles long passwords natively
         hashed_pw = pwd_context.hash(password)
         c.execute("INSERT INTO users VALUES (?, ?, ?)", (email, hashed_pw, full_name))
         conn.commit()

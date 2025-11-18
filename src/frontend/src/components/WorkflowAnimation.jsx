@@ -6,7 +6,7 @@ export default function WorkflowAnimation() {
   return (
     <div className="relative w-full max-w-7xl mx-auto h-80 flex items-center justify-center gap-4 md:gap-12 px-4">
       
-      {/* 1. Left Card: Raw Data */}
+      {/*Left Card:*/}
       <motion.div 
         initial={{ opacity: 0, x: -50 }}
         whileInView={{ opacity: 1, x: 0 }}
@@ -32,7 +32,7 @@ export default function WorkflowAnimation() {
          />
       </div>
 
-      {/* 2. Middle Card: Discovery Engine (NEW) */}
+      {/*Middle Card*/}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
         whileInView={{ opacity: 1, scale: 1 }}
@@ -44,7 +44,7 @@ export default function WorkflowAnimation() {
          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">PC ALGO</span>
       </motion.div>
 
-      {/* Pipe 2 */}
+      {/*Pipe 2 */}
       <div className="flex-1 h-[2px] bg-gray-200 dark:bg-gray-800 relative overflow-hidden max-w-[100px]">
          <motion.div 
             className="absolute top-0 left-0 h-full w-1/2 bg-gradient-to-r from-transparent via-purple-500 to-transparent"
@@ -53,7 +53,7 @@ export default function WorkflowAnimation() {
          />
       </div>
 
-      {/* 3. Right Card: Causal Graph */}
+      {/*Right Card*/}
       <motion.div 
         initial={{ opacity: 0, x: 50 }}
         whileInView={{ opacity: 1, x: 0 }}

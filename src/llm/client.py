@@ -6,7 +6,6 @@ import networkx as nx
 from typing import List, Tuple
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -77,7 +76,6 @@ class CausalLLM:
         """
 
         if not self.model:
-            # Mock response
             if len(variables) >= 2:
                 return [(variables[0], variables[1])]
             return []
@@ -86,7 +84,6 @@ class CausalLLM:
             response = self.model.generate_content(prompt)
             content = response.text.strip()
             
-            # Clean up if the model adds markdown blocks despite instructions
             if content.startswith("```"):
                 content = content.split("\n", 1)[1]
                 if content.endswith("```"):
@@ -103,18 +100,15 @@ class CausalLLM:
             logger.error(f"Gemini prior extraction failed: {e}")
             return []
 
-# Unit Test if run directly
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     llm = CausalLLM()
     
-    # Test Explanation
     g = nx.DiGraph()
     g.add_edge("Rain", "Wet_Grass")
     print("\n--- Explanation Test ---")
     print(llm.explain_graph(g, "Weather System"))
     
-    # Test Priors
     print("\n--- Prior Suggestion Test ---")
     priors = llm.suggest_priors("Car Mechanics", ["Engine_Temp", "Oil_Level", "Car_Speed"])
     print(priors)

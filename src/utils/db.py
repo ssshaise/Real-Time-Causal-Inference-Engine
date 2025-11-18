@@ -20,7 +20,6 @@ class Database:
     def query(self, sql: str):
         return self.conn.execute(sql).df()
 
-# Initialize DB
 if __name__ == "__main__":
     db = Database()
     db.import_csv("data/raw/ecommerce_data.csv")

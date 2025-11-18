@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/587c0a4d63e34955adf781fab09e9931/artifacts
+end_time: 1763464761362
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 587c0a4d63e34955adf781fab09e9931
+run_name: redolent-bear-423
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763464761252
+status: 3
+tags: []
+user_id: ruchi

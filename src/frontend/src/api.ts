@@ -1,13 +1,11 @@
-// src/frontend/src/api.ts
 import axios from 'axios';
 
 const API_URL = "http://127.0.0.1:8000";
 
-// Define a simple type for Edges to keep things clean
 type Edge = string[];
 
 export const api = {
-    // --- CORE FUNCTIONS ---
+    // CORE FUNCTIONS 
     discover: async (datasetPath: string, method: string) => {
         const res = await axios.post(`${API_URL}/discover`, { dataset_path: datasetPath, method });
         return res.data;
@@ -65,7 +63,6 @@ export const api = {
     },
     
 
-    // --- AUTH FUNCTIONS (Added Types) ---
     login: async (email: string, password: string) => {
         const res = await axios.post(`${API_URL}/auth/login`, { email, password, full_name: "User" });
         return res.data;
@@ -75,7 +72,6 @@ export const api = {
         return res.data;
     },
 
-    // --- HISTORY FUNCTIONS (Added Types) ---
     saveHistory: async (email: string, type: string, inputs: any, results: any) => {
         await axios.post(`${API_URL}/history/save`, { email, type, inputs, results });
     },

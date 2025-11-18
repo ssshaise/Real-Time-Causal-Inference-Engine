@@ -1,4 +1,3 @@
-// src/frontend/src/components/FeatureSlider.jsx
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -45,11 +44,7 @@ export default function FeatureSlider() {
               Core <span className="text-brand-500">Capabilities</span>
           </h2>
       </div>
-      
-      {/* CRITICAL FIX: 
-         slidesPerView={1} forces one card.
-         centeredSlides={true} ensures it sits in the middle.
-      */}
+
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={40}

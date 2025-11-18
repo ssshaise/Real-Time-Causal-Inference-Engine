@@ -40,7 +40,7 @@ html {
   border-color: #00e5ff;
   color: #000000 !important;     
   transform: scale(1.1);         
-  box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); /* Glowing aura */
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); 
 }
 
 .swiper-button-prev {

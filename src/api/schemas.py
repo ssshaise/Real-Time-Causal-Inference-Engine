@@ -2,12 +2,12 @@
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Any, Union
 
-# --- Request Models ---
+#Request Models
 
 class OptimizeRequest(BaseModel):
-    target_node: str          # e.g., "Revenue"
-    target_value: float       # e.g., 20000
-    control_node: str         # e.g., "Discount_Pct"
+    target_node: str          
+    target_value: float       
+    control_node: str        
     dataset_path: str
     dag_edges: List[List[str]]
 
@@ -23,14 +23,13 @@ class UserAuth(BaseModel):
 
 class HistoryItem(BaseModel):
     email: str
-    type: str # "counterfactual" or "simulation"
+    type: str 
     inputs: Dict[str, Any]
     results: Dict[str, Any]
 
-# --- UPDATE: Simulation Response (Add CIs) ---
+# Simulation Response
 class SimulationResponse(BaseModel):
     mean_outcomes: Dict[str, Optional[float]]
-    # Add these two new fields:
     lower_ci: Dict[str, Optional[float]] = {} 
     upper_ci: Dict[str, Optional[float]] = {}
 
@@ -60,7 +59,7 @@ class ExplanationRequest(BaseModel):
     edges: List[List[str]]
     context: str = "generic system"
 
-# --- Response Models ---
+#Response Models
 
 class GraphResponse(BaseModel):
     edges: List[List[str]]
@@ -71,7 +70,6 @@ class SCMStatusResponse(BaseModel):
     status: str
     message: str
 
-# FIX: Allow values to be float OR None (Optional[float])
 class CounterfactualResponse(BaseModel):
     original: Dict[str, Optional[float]] 
     counterfactual: Dict[str, Optional[float]]

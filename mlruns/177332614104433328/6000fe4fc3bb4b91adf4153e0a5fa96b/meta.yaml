@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/177332614104433328/6000fe4fc3bb4b91adf4153e0a5fa96b/artifacts
+end_time: 1763464775482
+entry_point_name: ''
+experiment_id: '177332614104433328'
+lifecycle_stage: active
+run_id: 6000fe4fc3bb4b91adf4153e0a5fa96b
+run_name: gregarious-moose-690
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763464766590
+status: 3
+tags: []
+user_id: ruchi

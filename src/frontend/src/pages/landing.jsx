@@ -14,14 +14,13 @@ export default function Landing() {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    // 1. Force Dark Mode
+    //Force Dark Mode
     document.documentElement.classList.add('dark');
     
-    // 2. Check Login Status
+    //Check Login Status
     const email = localStorage.getItem('user_email');
     if (email) {
         setUserEmail(email);
-        // Extract name from email (e.g., "ruchir" from "ruchir@gmail.com") and Capitalize
         const namePart = email.split('@')[0];
         setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1));
     }
@@ -31,7 +30,7 @@ export default function Landing() {
       localStorage.removeItem('user_email');
       setUserEmail(null);
       setUserName("");
-      navigate('/'); // Stay on home but reset state
+      navigate('/'); 
   };
 
   const scrollToSection = (id) => {
@@ -42,7 +41,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-[#020617] text-white font-sans selection:bg-brand-500 selection:text-white overflow-hidden relative">
       
-      {/* --- BACKGROUND --- */}
+      {/*BACKGROUND*/}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-[#050505]"></div>
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#00e5ff] blur-[100px] opacity-40 animate-pulse"></div>
@@ -52,7 +51,7 @@ export default function Landing() {
 
       <div className="relative z-10">
         
-        {/* --- NAVBAR WITH AUTH LOGIC --- */}
+        {/* NAVBAR */}
         <nav className="fixed w-full top-0 z-50 bg-black/10 backdrop-blur-xl border-b border-white/5 px-6 py-4">
            <div className="max-w-7xl mx-auto flex justify-between items-center">
               <div className="text-2xl font-bold flex items-center gap-2 tracking-tighter cursor-pointer" onClick={() => window.scrollTo(0,0)}>
@@ -68,9 +67,8 @@ export default function Landing() {
                   <button onClick={() => scrollToSection('contact')} className="hover:text-brand-500 transition">Contact</button>
                 </div>
                 
-                {/* AUTH SWITCHER */}
+                {/*AUTH SWITCHER*/}
                 {userEmail ? (
-                    // IF LOGGED IN: Show Name + Dashboard + Logout
                     <div className="flex items-center gap-4 pl-4 border-l border-white/10">
                         <div className="text-right hidden sm:block">
                             <p className="text-xs text-gray-400">Welcome back,</p>
@@ -92,7 +90,6 @@ export default function Landing() {
                         </button>
                     </div>
                 ) : (
-                    // IF LOGGED OUT: Show Login Button
                     <button onClick={() => navigate('/login')} className="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]">
                       Login
                     </button>
@@ -121,7 +118,7 @@ export default function Landing() {
            </motion.p>
 
            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="flex flex-col sm:flex-row gap-4 justify-center mb-24">
-              {/* SMART BUTTON: Changes based on login status */}
+              {/*SMART BUTTON*/}
               <button 
                 onClick={() => navigate(userEmail ? '/dashboard' : '/login')} 
                 className="group bg-brand-600 hover:bg-brand-500 text-white px-8 py-4 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:-translate-y-1"

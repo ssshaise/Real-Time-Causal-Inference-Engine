@@ -1,7 +1,6 @@
-// src/frontend/src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Landing from './pages/landing';
-import Dashboard from './pages/Dashboard'; // Assuming you saved your dashboard code here
+import Dashboard from './pages/Dashboard'; 
 import Architecture from './pages/Architecture';
 import Login from './pages/Login';
 

@@ -1,4 +1,3 @@
-// src/frontend/src/pages/Login.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -18,13 +17,13 @@ export default function Login() {
         if (isLogin) {
             const res = await api.login(formData.email, formData.password);
             if (res.status === 'success') {
-                localStorage.setItem('user_email', formData.email); // Simple session
+                localStorage.setItem('user_email', formData.email);
                 navigate('/dashboard');
             }
         } else {
             const res = await api.signup(formData.email, formData.password, formData.name);
             if (res.status === 'success') {
-                setIsLogin(true); // Switch to login after signup
+                setIsLogin(true);
                 alert("Account created! Please login.");
             }
         }
@@ -35,7 +34,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Glows */}
+      {/*Background Glows*/}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-brand-600/20 rounded-full blur-[120px]"></div>
          <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px]"></div>

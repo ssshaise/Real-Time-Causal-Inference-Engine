@@ -15,7 +15,7 @@ import { api } from '../api';
 
 const DEFAULT_PATH = "data/raw/ecommerce_data.csv";
 
-// --- UI COMPONENTS ---
+//UI COMPONENTS 
 const TabButton = ({ id, icon: Icon, label, activeTab, setActiveTab }) => (
   <button
     onClick={() => setActiveTab(id)}
@@ -105,7 +105,7 @@ export default function Dashboard() {
   const graphWrapperRef = useRef(null);
   const [graphDimensions, setGraphDimensions] = useState({ w: 600, h: 500 });
 
-  // --- EFFECTS ---
+  //EFFECTS 
   useEffect(() => {
     document.documentElement.classList.add('dark');
     if (!userEmail) {
@@ -144,7 +144,7 @@ export default function Dashboard() {
     }
   }, [edges]);
 
-  // --- HANDLERS ---
+  //HANDLERS 
 
   const handleLogout = () => {
       localStorage.removeItem('user_email');
@@ -289,7 +289,7 @@ export default function Dashboard() {
       <main id="dashboard-content" className="max-w-7xl mx-auto px-6 pt-8">
         <AnimatePresence mode="wait">
           
-          {/* TAB 0: DISCOVERY */}
+          {/*TAB 0: DISCOVERY*/}
           {activeTab === 0 && (
             <motion.div key="discovery" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-140px)]">
                <div className="lg:col-span-4 flex flex-col gap-6">
@@ -363,7 +363,7 @@ export default function Dashboard() {
             </motion.div>
           )}
 
-          {/* TAB 1: TRAINING */}
+          {/*TAB 1: TRAINING*/}
           {activeTab === 1 && (
              <motion.div key="training" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center justify-center h-[80vh]">
                 <div className="bg-[#161616] border border-white/5 p-12 rounded-[2rem] shadow-2xl text-center max-w-2xl w-full">
@@ -381,7 +381,7 @@ export default function Dashboard() {
              </motion.div>
           )}
 
-          {/* TAB 2: ANALYSIS */}
+          {/*TAB 2: ANALYSIS*/}
           {activeTab === 2 && (
              <motion.div key="analysis" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="space-y-6">

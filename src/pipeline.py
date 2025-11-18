@@ -22,13 +22,10 @@ def train_model(df, graph):
 
 @flow(name="RCIE Retraining Loop")
 def main_pipeline():
-    # 1. Load Data from DuckDB
     data = load_data()
     
-    # 2. Discover Graph
     graph = discover_structure(data)
     
-    # 3. Train & Log to MLflow
     model = train_model(data, graph)
     
     print("Pipeline Complete. Model updated.")

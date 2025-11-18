@@ -35,7 +35,7 @@ services:
     volumes:
       - mlflow_data:/mlflow
     environment:
-      - MLFLOW_S3_ENDPOINT_URL=... # Add S3/MinIO details if used
+      - MLFLOW_S3_ENDPOINT_URL=...
     command: >
       mlflow server
       --backend-store-uri postgresql://myuser:mypassword@db:5432/rcie_db
@@ -49,13 +49,13 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml # You'll need to create this file
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml 
 
   grafana:
     image: grafana/grafana:latest
     container_name: rcie_grafana
     ports:
-      - "3001:3000" # Host 3001 -> Container 3000
+      - "3001:3000" 
     depends_on:
       - prometheus
     volumes:

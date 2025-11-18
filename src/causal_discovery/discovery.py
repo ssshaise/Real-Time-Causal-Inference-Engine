@@ -5,8 +5,6 @@ import numpy as np
 import logging
 import mlflow
 from typing import Dict, Any
-
-# Import Algorithms
 from causallearn.search.ConstraintBased.PC import pc
 from causallearn.search.ScoreBased.GES import ges
 from src.causal_discovery.algorithms import run_notears
@@ -28,7 +26,6 @@ class CausalDiscoveryEngine:
     def run(self, data: pd.DataFrame) -> nx.DiGraph:
         logger.info(f"Running causal discovery using {self.method}...")
         
-        # Start MLflow run for tracking discovery metrics
         mlflow.set_experiment("RCIE_Discovery")
         with mlflow.start_run(nested=True):
             mlflow.log_param("method", self.method)
@@ -56,7 +53,6 @@ class CausalDiscoveryEngine:
         data_norm = (data - data.mean()) / data.std()
         data_np = data_norm.fillna(0).values
         
-        # Run algorithm
         G_int = run_notears(data_np)
         
         # Remap integer indices back to column names
@@ -75,7 +71,6 @@ class CausalDiscoveryEngine:
         data_np = data.values
         labels = data.columns.tolist()
         
-        # Run GES
         # Returns: {'G': GeneralGraph, 'score': float}
         record = ges(data_np)
         adj_matrix = record['G'].graph
@@ -92,7 +87,6 @@ class CausalDiscoveryEngine:
                 if adj_matrix[i, j] == 2 and adj_matrix[j, i] == 1:
                      G.add_edge(labels[j], labels[i])
                 elif adj_matrix[i, j] == -1 and adj_matrix[j, i] == 1:
-                     # Handle generic causal-learn output variations
                      G.add_edge(labels[j], labels[i])
                      
         return G
@@ -102,7 +96,6 @@ class CausalDiscoveryEngine:
         data_np = data.to_numpy()
         labels = data.columns.tolist()
         
-        # Run PC with Fisher-Z test
         # 0.05 is default alpha
         alpha = self.options.get("alpha", 0.05)
         cg = pc(data_np, alpha, "fisherz", True, 0, -1)

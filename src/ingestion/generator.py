@@ -6,7 +6,6 @@ import argparse
 import logging
 from typing import Dict, Any, Tuple
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -27,21 +26,19 @@ class CausalDataGenerator:
         """
         Generates a random Directed Acyclic Graph (DAG).
         """
-        # Generate a random matrix
         G = nx.gnp_random_graph(self.n_nodes, self.edge_density, directed=True, seed=self.seed)
         
-        # Make it a DAG by taking the upper triangular part (ensures no cycles)
         adjacency = nx.to_numpy_array(G)
         adjacency = np.triu(adjacency, k=1)
         
-        # Shuffle nodes to avoid trivial ordering (node 0 -> node 1 -> ...)
+        #(node 0 -> node 1 -> ...)
         perm = np.random.permutation(self.n_nodes)
         adjacency = adjacency[perm, :][:, perm]
         
         self.adjacency_matrix = adjacency
         self.graph = nx.from_numpy_array(adjacency, create_using=nx.DiGraph)
         
-        # Relabel nodes to X0, X1, ...
+        #nodes to X0, X1, ...
         mapping = {i: f"X{i}" for i in range(self.n_nodes)}
         self.graph = nx.relabel_nodes(self.graph, mapping)
         
@@ -55,14 +52,12 @@ class CausalDataGenerator:
         if parents_values.size == 0:
             return np.zeros(parents_values.shape[0]) if parents_values.ndim > 1 else 0.0
         
-        # Linear combination of parents
         weights = np.random.uniform(0.5, 2.0, size=parents_values.shape[1])
         combined = np.dot(parents_values, weights)
         
         if self.is_linear:
             return combined
         else:
-            # Non-linear transformation (e.g., tanh)
             return np.tanh(combined)
 
     def generate_data(self) -> pd.DataFrame:
@@ -74,18 +69,15 @@ class CausalDataGenerator:
             
         n_samples = self.config['n_samples']
         data = pd.DataFrame(index=range(n_samples), columns=[f"X{i}" for i in range(self.n_nodes)])
-        
-        # Topological sort ensures we compute parents before children
+
         topo_order = list(nx.topological_sort(self.graph))
         
         for node in topo_order:
             parents = list(self.graph.predecessors(node))
             
             if not parents:
-                # Root node: just noise
                 values = np.random.normal(0, 1, n_samples)
             else:
-                # Child node: function of parents + noise
                 parent_values = data[parents].values
                 effect = self._structural_function(parent_values)
                 noise = np.random.normal(0, self.noise_scale, n_samples)
@@ -114,6 +106,5 @@ if __name__ == "__main__":
     df = generator.generate_data()
     generator.save_data(df, args.output)
     
-    # Print edges for verification
     print("\nTrue Causal Graph Edges:")
     print(generator.graph.edges())
