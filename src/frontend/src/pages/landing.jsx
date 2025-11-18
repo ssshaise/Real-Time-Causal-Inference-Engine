@@ -160,16 +160,19 @@ export default function Landing() {
             <div className="max-w-7xl mx-auto px-6 text-center">
               <h2 className="text-3xl font-bold mb-8">Built for Research. Engineered for Speed.</h2>
               <p className="text-gray-400 max-w-2xl mx-auto mb-12">
-                This project was built using React, FastAPI, PyTorch, and Google Gemini. 
+                This project was built using React, FastAPI, PyTorch, and DuckDB.
                 It serves as a proof-of-concept for next-generation Decision Support Systems.
               </p>
               <div className="flex justify-center gap-6 mb-12">
-                <a href="https://github.com/YOUR_USERNAME" target="_blank" rel="noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-brand-500 hover:text-white transition shadow-sm"><Github size={24}/></a>
-                <a href="https://linkedin.com/in/YOUR_USERNAME" target="_blank" rel="noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-brand-500 hover:text-white transition shadow-sm"><Linkedin size={24}/></a>
-                <a href="mailto:your.email@example.com" className="p-3 bg-white/5 rounded-full hover:bg-brand-500 hover:text-white transition shadow-sm"><Mail size={24}/></a>
+                <a href="https://github.com/ssshaise" target="_blank" rel="noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-brand-500 hover:text-white transition shadow-sm"><Github size={24}/></a>
+                <a href="https://linkedin.com/in/ruchir-srivastava-a6b568282/" target="_blank" rel="noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-brand-500 hover:text-white transition shadow-sm"><Linkedin size={24}/></a>
+                <a href="mailto:work.sruchir@gmail.com" className="p-3 bg-white/5 rounded-full hover:bg-brand-500 hover:text-white transition shadow-sm"><Mail size={24}/></a>
               </div>
               <div className="text-sm text-gray-500 border-t border-white/10 pt-8">
                 © 2025 RCIE Platform. Open Source Research Project.
+              </div>
+              <div className="text-sm text-gray-500 mt-2">
+                         Made with ❤️ by Ruchir Srivastava.
               </div>
             </div>
         </footer>
