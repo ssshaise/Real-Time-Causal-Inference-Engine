@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/edbae442132e493281f6debb9ab54968/artifacts
+end_time: 1763399804997
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: edbae442132e493281f6debb9ab54968
+run_name: legendary-boar-25
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763399804676
+status: 3
+tags: []
+user_id: ruchi

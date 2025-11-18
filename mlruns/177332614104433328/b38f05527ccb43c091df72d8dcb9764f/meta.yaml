@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/177332614104433328/b38f05527ccb43c091df72d8dcb9764f/artifacts
+end_time: 1763400640306
+entry_point_name: ''
+experiment_id: '177332614104433328'
+lifecycle_stage: active
+run_id: b38f05527ccb43c091df72d8dcb9764f
+run_name: abundant-wasp-741
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763400639999
+status: 3
+tags: []
+user_id: ruchi

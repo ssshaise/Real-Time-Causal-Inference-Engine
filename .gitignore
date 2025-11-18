@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+.DS_Store
+
+data/rcie.duckdb
+data/models/*.pkl
+
+# Node / Frontend
+node_modules/
+dist/
+.vite/
+npm-debug.log
+yarn-error.log
+
+# IDE
+.vscode/
+.idea/

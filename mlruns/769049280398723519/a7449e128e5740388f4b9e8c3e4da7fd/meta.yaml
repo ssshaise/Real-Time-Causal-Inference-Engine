@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/a7449e128e5740388f4b9e8c3e4da7fd/artifacts
+end_time: 1763370122889
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: a7449e128e5740388f4b9e8c3e4da7fd
+run_name: calm-shrew-699
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763370121313
+status: 3
+tags: []
+user_id: ruchi

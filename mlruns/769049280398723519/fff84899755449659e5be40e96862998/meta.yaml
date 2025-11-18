@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/fff84899755449659e5be40e96862998/artifacts
+end_time: 1763453592513
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: fff84899755449659e5be40e96862998
+run_name: rebellious-seal-454
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763453579033
+status: 3
+tags: []
+user_id: ruchi

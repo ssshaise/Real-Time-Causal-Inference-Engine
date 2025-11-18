@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../src:/app/src
+    env_file:
+      - ../.env
+    depends_on:
+      - db
+      - mlflow
+
+  db:
+    image: postgres:15
+    container_name: rcie_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=rcie_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mlflow:
+    image: mlflow/mlflow:latest
+    container_name: rcie_mlflow
+    ports:
+      - "5001:5000" # Host 5001 -> Container 5000
+    volumes:
+      - mlflow_data:/mlflow
+    environment:
+      - MLFLOW_S3_ENDPOINT_URL=... # Add S3/MinIO details if used
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://myuser:mypassword@db:5432/rcie_db
+      --default-artifact-root /mlflow
+      --host 0.0.0.0
+      --port 5000
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: rcie_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # You'll need to create this file
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: rcie_grafana
+    ports:
+      - "3001:3000" # Host 3001 -> Container 3000
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  postgres_data:
+  mlflow_data:
+  grafana_data:

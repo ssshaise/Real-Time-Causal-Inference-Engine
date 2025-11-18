@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/10a5e3448404466ca7c6f5d77baed099/artifacts
+end_time: 1763400637174
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 10a5e3448404466ca7c6f5d77baed099
+run_name: selective-colt-266
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763400636877
+status: 3
+tags: []
+user_id: ruchi

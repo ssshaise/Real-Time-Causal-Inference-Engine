@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/da40e36299b2452798cce83e2bf69a2d/artifacts
+end_time: 1763370266310
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: da40e36299b2452798cce83e2bf69a2d
+run_name: worried-squid-898
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763370264725
+status: 3
+tags: []
+user_id: ruchi

@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/177332614104433328/e83fccabd4be4d5e92d6f0ccb5e4857a/artifacts
+end_time: 1763400461051
+entry_point_name: ''
+experiment_id: '177332614104433328'
+lifecycle_stage: active
+run_id: e83fccabd4be4d5e92d6f0ccb5e4857a
+run_name: unruly-worm-154
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763400460708
+status: 3
+tags: []
+user_id: ruchi

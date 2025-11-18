@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/71f45b6c91ee4c37a87799a2ece462cf/artifacts
+end_time: 1763454021850
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 71f45b6c91ee4c37a87799a2ece462cf
+run_name: illustrious-gnu-152
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763454019051
+status: 3
+tags: []
+user_id: ruchi

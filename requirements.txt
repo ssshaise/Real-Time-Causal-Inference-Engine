@@ -1,0 +1,12 @@
+python-dotenv
+fastapi
+uvicorn[standard]
+numpy
+pandas
+networkx
+torch
+causal-learn
+google-generativeai
+streamlit
+matplotlib
+requests

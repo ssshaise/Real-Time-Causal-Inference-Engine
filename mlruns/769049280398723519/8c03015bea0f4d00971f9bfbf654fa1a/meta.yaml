@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/8c03015bea0f4d00971f9bfbf654fa1a/artifacts
+end_time: 1763370833138
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 8c03015bea0f4d00971f9bfbf654fa1a
+run_name: unequaled-grouse-444
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763370833009
+status: 3
+tags: []
+user_id: ruchi

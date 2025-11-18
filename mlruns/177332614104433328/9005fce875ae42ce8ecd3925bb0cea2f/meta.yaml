@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/177332614104433328/9005fce875ae42ce8ecd3925bb0cea2f/artifacts
+end_time: 1763370273185
+entry_point_name: ''
+experiment_id: '177332614104433328'
+lifecycle_stage: active
+run_id: 9005fce875ae42ce8ecd3925bb0cea2f
+run_name: crawling-zebra-880
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763370272748
+status: 3
+tags: []
+user_id: ruchi

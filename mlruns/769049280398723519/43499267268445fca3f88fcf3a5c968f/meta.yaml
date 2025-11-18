@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/43499267268445fca3f88fcf3a5c968f/artifacts
+end_time: 1763369980639
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 43499267268445fca3f88fcf3a5c968f
+run_name: defiant-flea-644
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763369980556
+status: 3
+tags: []
+user_id: ruchi

@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  width: 36px !important;        
+  height: 36px !important;
+  border-radius: 50%;            
+  background: rgba(255, 255, 255, 0.03); 
+  backdrop-filter: blur(12px);   
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  color: rgba(255, 255, 255, 0.6) !important; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+  z-index: 50;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 10px !important;
+  font-weight: 800; 
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: #00e5ff;           
+  border-color: #00e5ff;
+  color: #000000 !important;     
+  transform: scale(1.1);         
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); /* Glowing aura */
+}
+
+.swiper-button-prev {
+  left: 10px !important;
+}
+.swiper-button-next {
+  right: 10px !important;
+}
+
+.swiper-button-next:focus,
+.swiper-button-prev:focus {
+  outline: none;
+}
+
+.swiper-button-disabled {
+  opacity: 0 !important;
+  pointer-events: none;
+}

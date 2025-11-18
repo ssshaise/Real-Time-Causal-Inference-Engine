@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/8233ac3d10d64224b77cdce319b7591a/artifacts
+end_time: 1763456782478
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 8233ac3d10d64224b77cdce319b7591a
+run_name: thundering-seal-254
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763456782400
+status: 3
+tags: []
+user_id: ruchi

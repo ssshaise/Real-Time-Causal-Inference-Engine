@@ -1,0 +1,8 @@
+simulation:
+  name: "linear_gaussian_demo"
+  n_samples: 1000
+  n_nodes: 5
+  edge_density: 0.3  # Probability of an edge existing
+  is_linear: false   # If false, uses non-linear mechanisms (sine/tanh)
+  noise_scale: 0.1
+  seed: 42

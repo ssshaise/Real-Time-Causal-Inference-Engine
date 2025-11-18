@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/79a8e94f9e5e4b349989f374b9c9203b/artifacts
+end_time: 1763457137337
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 79a8e94f9e5e4b349989f374b9c9203b
+run_name: nervous-midge-917
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763457137260
+status: 3
+tags: []
+user_id: ruchi

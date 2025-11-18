@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/6dd30b7e57254d4c97a04341d5d2768d/artifacts
+end_time: 1763395875754
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: 6dd30b7e57254d4c97a04341d5d2768d
+run_name: bittersweet-ram-893
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763395875677
+status: 3
+tags: []
+user_id: ruchi

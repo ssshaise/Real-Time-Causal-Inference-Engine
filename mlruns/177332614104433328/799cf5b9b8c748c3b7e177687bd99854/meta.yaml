@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/177332614104433328/799cf5b9b8c748c3b7e177687bd99854/artifacts
+end_time: 1763454026673
+entry_point_name: ''
+experiment_id: '177332614104433328'
+lifecycle_stage: active
+run_id: 799cf5b9b8c748c3b7e177687bd99854
+run_name: popular-pig-744
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763454026166
+status: 3
+tags: []
+user_id: ruchi
