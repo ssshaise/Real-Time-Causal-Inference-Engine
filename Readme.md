@@ -67,31 +67,31 @@ Statistical rigor + modern deep learning + LLM-based domain extraction + full-st
  
 
 ## Key Features
-**1. Causal Discovery**
+**1. Causal Discovery**<br>
  NOTEARS (continuous optimization)<br>
  PC Algorithm (constraint-based)<br>
  GES (score-based)<br>
  DAG-GNN (deep learning–based)<br>
  Ensemble support with LLM-extracted priors
 
-**2. Structural Equation Modeling**
+**2. Structural Equation Modeling**<br>
  Neural Structural Equation Models (PyTorch)<br>
  Generalized Additive Models (GAMs)<br>
- Gaussian Process Models<
+ Gaussian Process Models
 
-**3. Counterfactual & Intervention Engine**
+**3. Counterfactual & Intervention Engine**<br>
  Implements Pearl’s abduction → action → prediction pipeline for hypothetical “what if” outcomes.
 
-**5. API + Frontend**
+**5. API + Frontend**<br>
  FastAPI for /discover, /counterfactual, /intervene endpoints<br>
  Lightweight UI for interactive graph visualization
 
-**6. Fully Dockerized Deployment**
+**6. Fully Dockerized Deployment**<br>
  Reproducible, portable, platform-independent. 
 
 ## Benchmarks & Evaluation
 
-RCIE includes reproducible notebooks and pipelines:<br>
+**RCIE includes reproducible notebooks and pipelines:**<br>
  ACIC 2016 causal benchmark tasks<br>
  IHDP semi-synthetic treatment effect prediction<br>
  Synthetic DAG generation for stress-testing<br>
@@ -151,4 +151,4 @@ benchmark suite expansion
 Ruchir Srivastava – ML, NLP, Causal Engineering<br>
 Collaborators & community contributors listed in repo.
 
-## ⭐ If this project helped you, consider giving a star!
+# ⭐ If this project helped you, consider giving a star!
