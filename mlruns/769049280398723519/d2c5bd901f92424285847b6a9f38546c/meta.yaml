@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/rcie/mlruns/769049280398723519/d2c5bd901f92424285847b6a9f38546c/artifacts
+end_time: 1763539153014
+entry_point_name: ''
+experiment_id: '769049280398723519'
+lifecycle_stage: active
+run_id: d2c5bd901f92424285847b6a9f38546c
+run_name: blushing-goat-656
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763539143214
+status: 3
+tags: []
+user_id: ruchi
