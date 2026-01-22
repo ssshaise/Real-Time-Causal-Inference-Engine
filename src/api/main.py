@@ -49,7 +49,6 @@ def load_active_model():
 
 ACTIVE_MODEL = load_active_model()
 
-#CYCLE BREAKER 
 def make_acyclic(g: nx.DiGraph) -> nx.DiGraph:
     """
     Detects cycles and removes the back-edge to ensure DAG properties.
@@ -135,7 +134,7 @@ def discover_graph(req: DiscoveryRequest):
         try:
             db = Database()
             df = db.get_data("events")
-        except:
+        except Exception: 
             df = pd.read_csv(req.dataset_path)
 
     except FileNotFoundError:
@@ -161,7 +160,7 @@ def fit_scm(req: FitSCMRequest):
         try:
             db = Database()
             df = db.get_data("events")
-        except:
+        except Exception:
             df = pd.read_csv(req.dataset_path)
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Dataset not found")
@@ -188,11 +187,10 @@ def query_counterfactual(req: CounterfactualRequest):
         
     if not ACTIVE_MODEL:
         try:
-            # Auto-train
             try:
                 db = Database()
                 df = db.get_data("events")
-            except:
+            except Exception:
                 df = pd.read_csv(req.dataset_path)
                 
             g = nx.DiGraph()
@@ -236,18 +234,15 @@ def optimize_target(req: OptimizeRequest):
         try:
             db = Database()
             df = db.get_data("events")
-        except:
+        except Exception:
             df = pd.read_csv(req.dataset_path)
             
         min_val = df[req.control_node].min()
         max_val = df[req.control_node].max()
-    except:
-        # Fallback defaults if data read fails
+    except Exception:
         min_val, max_val = 0.0, 1.0 
 
-    # 2. Grid Search Strategy (Test 50 possibilities)
-    # We brute-force this because neural nets are fast and non-linear
-    candidates = np.linspace(min_val, max_val, 50)
+    candidates = np.linspace(min_val, max_val,  50)
     best_diff = float('inf')
     best_val = candidates[0]
     best_pred = 0.0
@@ -285,11 +280,8 @@ def run_simulation(req: SimulationRequest):
     try:
         df_sim = sim.run_do_query(req.intervention, n_samples=req.n_samples)
         
-        # Calculate Stats
         means = df_sim.mean().to_dict()
         
-        # Calculate Risk Ranges (Confidence Intervals)
-        # 5th percentile = Worst Case, 95th percentile = Best Case
         lower = df_sim.quantile(0.05).to_dict()
         upper = df_sim.quantile(0.95).to_dict()
         
