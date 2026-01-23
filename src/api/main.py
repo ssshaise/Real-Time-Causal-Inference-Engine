@@ -18,11 +18,34 @@ from src.simulator.simulator import CausalSimulator
 from src.llm.client import CausalLLM
 from src.api.schemas import *
 from src.utils.db import Database 
+from src.utils.auth_db import init_db
+from contextlib import asynccontextmanager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
 
-app = FastAPI(title="RCIE System")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Starting up: Creating database tables...")
+    try:
+        init_db() 
+        print("Database tables created successfully.")
+    except Exception as e:
+        print(f"Error creating database tables: {e}")
+
+    global ACTIVE_MODEL
+    if os.path.exists(MODEL_PATH):
+        try:
+            ACTIVE_MODEL = CausalSCM.load(MODEL_PATH)
+            print("Model loaded successfully.")
+        except Exception:
+            print("No model found, starting empty.")
+    
+    yield 
+    
+    print("Shutting down RCIE System...")
+
+app = FastAPI(title="RCIE System" , lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,21 +56,6 @@ app.add_middleware(
 )
 
 MODEL_PATH = "data/models/latest_model.pkl"
-
-def load_active_model():
-    """Try to load the model from disk and FIX it if it's broken."""
-    if os.path.exists(MODEL_PATH):
-        try:
-            model = CausalSCM.load(MODEL_PATH)
-            model.graph = make_acyclic(model.graph)
-            logger.info("Model loaded and sanitized (cycles removed).")
-            return model
-        except Exception as e:
-            logger.error(f"Failed to load model: {e}")
-            return None
-    return None
-
-ACTIVE_MODEL = load_active_model()
 
 def make_acyclic(g: nx.DiGraph) -> nx.DiGraph:
     """
@@ -302,3 +310,4 @@ def explain_graph_endpoint(req: ExplanationRequest):
         g.add_edge(edge[0], edge[1])
     text = llm.explain_graph(g, context=req.context)
     return {"narrative": text}
+
