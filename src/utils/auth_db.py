@@ -11,13 +11,17 @@ if not DATABASE_URL:
     os.makedirs("data", exist_ok=True)
     DB_PATH = "sqlite:///./data/users.db"
     engine = create_engine(DB_PATH, connect_args={"check_same_thread": False})
-    print("⚠️  Using LOCAL SQLite database.")
+    print("Using LOCAL SQLite database.")
 else:
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
     
-    engine = create_engine(DATABASE_URL)
-    print("✅  Using CLOUD PostgreSQL database.")
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,  # Checks if connection is alive before using it
+        pool_recycle=300     # Refreshes connections every 5 minutes
+    )
+    print("Using CLOUD PostgreSQL database.")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
