@@ -1,5 +1,5 @@
 ---
-title: Causal Inference Engine
+title: Real-Time Causal Inference Engine
 emoji: 🧠
 colorFrom: purple
 colorTo: indigo
