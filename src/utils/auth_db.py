@@ -4,6 +4,9 @@ from datetime import datetime
 from passlib.context import CryptContext
 from sqlalchemy import create_engine, Column, String, Integer, Text, desc
 from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 

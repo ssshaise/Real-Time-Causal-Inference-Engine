@@ -6,8 +6,14 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./src /app/src
+RUN pip install gunicorn uvicorn
 
-EXPOSE 8000
+COPY . .
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN useradd -m -u 1000 user
+USER user
+
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
+
+CMD ["gunicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "7860", "--timeout", "300", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker"]

@@ -16,3 +16,7 @@ torch==2.9.1
 python-multipart
 argon2-cffi
 psycopg2-binary
+uvicorn
+gunicorn
+scikit-learn
+sqlalchemy

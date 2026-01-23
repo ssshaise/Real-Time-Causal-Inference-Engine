@@ -12,7 +12,7 @@ import shutil
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 
-# Local Imports
+
 from src.utils.auth_db import create_user, verify_user, save_history, get_history, delete_history, init_db
 from src.utils.db import Database 
 from src.causal_discovery.discovery import CausalDiscoveryEngine
@@ -21,6 +21,9 @@ from src.counterfactuals.engine import CounterfactualEngine
 from src.simulator.simulator import CausalSimulator
 from src.llm.client import CausalLLM
 from src.api.schemas import *
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
