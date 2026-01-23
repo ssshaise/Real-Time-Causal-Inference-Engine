@@ -11,7 +11,8 @@ pinned: false
 ---
 
 ## Real-Time Causal Inference Engine (RCIE)
-A production-ready engine for causal discovery, structural causal modeling, and real-time counterfactual reasoning.
+A production-ready engine for causal discovery, structural causal modeling, and real-time counterfactual reasoning. 
+You can check it out here: [www.rcie.vercel.app/](https://rcie.vercel.app/)
 
 ## Overview
 The Real-Time Causal Inference Engine (RCIE) is an end-to-end system designed to help analysts, ML engineers, and decision-makers answer “What causes what?” and “What happens if we intervene?” using principled causal inference.
