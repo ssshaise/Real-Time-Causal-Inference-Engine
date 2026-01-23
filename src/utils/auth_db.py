@@ -1,87 +1,126 @@
-# src/utils/auth_db.py
-import sqlite3
+import os
 import json
 from datetime import datetime
 from passlib.context import CryptContext
+from sqlalchemy import create_engine, Column, String, Integer, Text, desc
+from sqlalchemy.orm import sessionmaker, declarative_base
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    os.makedirs("data", exist_ok=True)
+    DB_PATH = "sqlite:///./data/users.db"
+    engine = create_engine(DB_PATH, connect_args={"check_same_thread": False})
+    print("⚠️  Using LOCAL SQLite database.")
+else:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    
+    engine = create_engine(DATABASE_URL)
+    print("✅  Using CLOUD PostgreSQL database.")
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# Password Hashing Setup
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
-DB_PATH = "data/users.db"
+
+
+class User(Base):
+    __tablename__ = "users"
+    email = Column(String, primary_key=True, index=True)
+    password_hash = Column(String)
+    full_name = Column(String)
+
+class History(Base):
+    __tablename__ = "history"
+    id = Column(Integer, primary_key=True, index=True)
+    user_email = Column(String, index=True)
+    type = Column(String)
+    timestamp = Column(String)
+    inputs = Column(Text)  # JSON stored as Text for compatibility
+    results = Column(Text) # JSON stored as Text
+
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users 
-                 (email TEXT PRIMARY KEY, password_hash TEXT, full_name TEXT)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS history 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, 
-                  type TEXT, timestamp TEXT, inputs TEXT, results TEXT)''')
-    conn.commit()
-    conn.close()
+    """Creates tables if they don't exist. Called by main.py on startup."""
+    Base.metadata.create_all(bind=engine)
 
 def create_user(email, password, full_name):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
+    session = SessionLocal()
     try:
+        # Check if user already exists
+        existing_user = session.query(User).filter(User.email == email).first()
+        if existing_user:
+            return False
+        
+        # Hash password and save
         hashed_pw = pwd_context.hash(password)
-        c.execute("INSERT INTO users VALUES (?, ?, ?)", (email, hashed_pw, full_name))
-        conn.commit()
+        new_user = User(email=email, password_hash=hashed_pw, full_name=full_name)
+        session.add(new_user)
+        session.commit()
         return True
-    except sqlite3.IntegrityError:
-        return False 
+    except Exception as e:
+        print(f"Error creating user: {e}")
+        session.rollback()
+        return False
     finally:
-        conn.close()
+        session.close()
 
 def verify_user(email, password):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT password_hash FROM users WHERE email=?", (email,))
-    row = c.fetchone()
-    conn.close()
-    
-    if row:
-        try:
-            return pwd_context.verify(password, row[0])
-        except Exception:
+    session = SessionLocal()
+    try:
+        user = session.query(User).filter(User.email == email).first()
+        if not user:
             return False
-    return False
+        return pwd_context.verify(password, user.password_hash)
+    except Exception:
+        return False
+    finally:
+        session.close()
 
 def save_history(email, analysis_type, inputs, results):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    inputs_json = json.dumps(inputs)
-    results_json = json.dumps(results)
-    
-    c.execute("INSERT INTO history (user_email, type, timestamp, inputs, results) VALUES (?, ?, ?, ?, ?)",
-              (email, analysis_type, timestamp, inputs_json, results_json))
-    conn.commit()
-    conn.close()
+    session = SessionLocal()
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Convert dicts to JSON strings for storage
+        inputs_json = json.dumps(inputs)
+        results_json = json.dumps(results)
+        
+        record = History(
+            user_email=email, 
+            type=analysis_type, 
+            timestamp=timestamp, 
+            inputs=inputs_json, 
+            results=results_json
+        )
+        session.add(record)
+        session.commit()
+    finally:
+        session.close()
 
 def get_history(email):
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT * FROM history WHERE user_email=? ORDER BY id DESC LIMIT 20", (email,))
-    rows = c.fetchall()
-    conn.close()
-    
-    
-    return [
-        {
-            "id": r["id"],
-            "type": r["type"],
-            "timestamp": r["timestamp"],
-            "inputs": json.loads(r["inputs"]),
-            "results": json.loads(r["results"])
-        } for r in rows
-    ]
-    
-def delete_history(email):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("DELETE FROM history WHERE user_email=?", (email,))
-    conn.commit()
-    conn.close()
+    session = SessionLocal()
+    try:
+        # Fetch last 20 records, newest first
+        rows = session.query(History).filter(History.user_email == email).order_by(desc(History.id)).limit(20).all()
+        
+        return [
+            {
+                "id": r.id,
+                "type": r.type,
+                "timestamp": r.timestamp,
+                "inputs": json.loads(r.inputs),
+                "results": json.loads(r.results)
+            } for r in rows
+        ]
+    finally:
+        session.close()
 
-init_db()
+def delete_history(email):
+    session = SessionLocal()
+    try:
+        session.query(History).filter(History.user_email == email).delete()
+        session.commit()
+    finally:
+        session.close()
