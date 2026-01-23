@@ -6,7 +6,7 @@ mlflow_skinny==3.6.0
 mlflow_tracing==3.6.0
 networkx==3.4.2
 numpy==2.4.1
-pandas==3.0.0
+pandas<3.0.0
 passlib==1.7.4
 prefect==3.6.13
 protobuf==6.33.4
