@@ -10,42 +10,56 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import UploadFile, File 
 import shutil
 from pydantic import BaseModel
-from src.utils.auth_db import create_user, verify_user, save_history, get_history, delete_history
+from contextlib import asynccontextmanager
+
+# Local Imports
+from src.utils.auth_db import create_user, verify_user, save_history, get_history, delete_history, init_db
+from src.utils.db import Database 
 from src.causal_discovery.discovery import CausalDiscoveryEngine
 from src.scm.estimator import CausalSCM
 from src.counterfactuals.engine import CounterfactualEngine
 from src.simulator.simulator import CausalSimulator
 from src.llm.client import CausalLLM
 from src.api.schemas import *
-from src.utils.db import Database 
-from src.utils.auth_db import init_db
-from contextlib import asynccontextmanager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
 
+# Global Variables
+MODEL_PATH = "data/models/latest_model.pkl"
+ACTIVE_MODEL = None
+
+# --- LIFESPAN MANAGER (Handles Startup/Shutdown) ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Starting up: Creating database tables...")
+    # 1. Database Startup
+    print("🚀 Starting up: Creating database tables...")
     try:
         init_db() 
-        print("Database tables created successfully.")
+        print("✅ Database tables created successfully.")
     except Exception as e:
-        print(f"Error creating database tables: {e}")
+        print(f"❌ Error creating database tables: {e}")
 
+    # 2. Model Loading
     global ACTIVE_MODEL
     if os.path.exists(MODEL_PATH):
         try:
             ACTIVE_MODEL = CausalSCM.load(MODEL_PATH)
-            print("Model loaded successfully.")
-        except Exception:
-            print("No model found, starting empty.")
+            # Fix graph cycles on load if necessary
+            ACTIVE_MODEL.graph = make_acyclic(ACTIVE_MODEL.graph)
+            print("✅ Model loaded successfully from disk.")
+        except Exception as e:
+            print(f"⚠️ Failed to load model: {e}")
+            ACTIVE_MODEL = None
+    else:
+        print("ℹ️ No model found on disk. Starting empty.")
     
     yield 
     
-    print("Shutting down RCIE System...")
+    print("🛑 Shutting down RCIE System...")
 
-app = FastAPI(title="RCIE System" , lifespan=lifespan)
+# --- APP DEFINITION ---
+app = FastAPI(title="RCIE System", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -55,8 +69,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = "data/models/latest_model.pkl"
-
+# --- HELPER FUNCTIONS ---
 def make_acyclic(g: nx.DiGraph) -> nx.DiGraph:
     """
     Detects cycles and removes the back-edge to ensure DAG properties.
@@ -76,7 +89,6 @@ def make_acyclic(g: nx.DiGraph) -> nx.DiGraph:
             break
     return g_copy
 
-#SANITIZER
 def sanitize_value(v):
     if v is None: return None
     try:
@@ -89,7 +101,7 @@ def sanitize_value(v):
 def sanitize_dict(d):
     return {k: sanitize_value(v) for k, v in d.items()}
 
-# ENDPOINTS 
+# --- ENDPOINTS ---
 
 @app.get("/")
 def read_root():
@@ -99,6 +111,7 @@ def read_root():
 @app.post("/upload")
 async def upload_dataset(file: UploadFile = File(...)):
     try:
+        os.makedirs("data/raw", exist_ok=True)
         file_location = f"data/raw/{file.filename}"
         
         with open(file_location, "wb+") as file_object:
@@ -182,6 +195,8 @@ def fit_scm(req: FitSCMRequest):
     scm = CausalSCM(g)
     scm.fit(df, epochs=req.epochs)
     
+    # Ensure directory exists before saving
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
     scm.save(MODEL_PATH)
     ACTIVE_MODEL = scm
     
@@ -190,9 +205,8 @@ def fit_scm(req: FitSCMRequest):
 @app.post("/counterfactual", response_model=CounterfactualResponse)
 def query_counterfactual(req: CounterfactualRequest):
     global ACTIVE_MODEL
-    if not ACTIVE_MODEL:
-        ACTIVE_MODEL = load_active_model()
-        
+    
+    # Check if model is loaded (from Lifespan). If not, try to train one on the fly.
     if not ACTIVE_MODEL:
         try:
             try:
@@ -209,6 +223,8 @@ def query_counterfactual(req: CounterfactualRequest):
             
             scm = CausalSCM(g)
             scm.fit(df, epochs=50)
+            
+            os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
             scm.save(MODEL_PATH)
             ACTIVE_MODEL = scm
         except Exception as e:
@@ -232,8 +248,6 @@ def query_counterfactual(req: CounterfactualRequest):
 @app.post("/optimize", response_model=OptimizeResponse)
 def optimize_target(req: OptimizeRequest):
     global ACTIVE_MODEL
-    if not ACTIVE_MODEL:
-        ACTIVE_MODEL = load_active_model()
     
     if not ACTIVE_MODEL:
          raise HTTPException(status_code=400, detail="Model not trained.")
@@ -278,8 +292,6 @@ def optimize_target(req: OptimizeRequest):
 @app.post("/simulate", response_model=SimulationResponse)
 def run_simulation(req: SimulationRequest):
     global ACTIVE_MODEL
-    if not ACTIVE_MODEL:
-        ACTIVE_MODEL = load_active_model()
     
     if not ACTIVE_MODEL:
          raise HTTPException(status_code=400, detail="Model not trained. Please go to Tab 2 and train first.")
@@ -310,4 +322,3 @@ def explain_graph_endpoint(req: ExplanationRequest):
         g.add_edge(edge[0], edge[1])
     text = llm.explain_graph(g, context=req.context)
     return {"narrative": text}
-
