@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "RCIE"
 emoji: "🧠"
@@ -8,6 +9,8 @@ app_file: "Dockerfile"
 pinned: false
 ---
 
+=======
+>>>>>>> 2ea65554263fbf91ada9d47049db3b220b785a9d
 ## Real-Time Causal Inference Engine (RCIE)
 A production-ready engine for causal discovery, structural causal modeling, and real-time counterfactual reasoning. 
 You can check it out here: [www.rcie.vercel.app/](https://rcie.vercel.app/)
