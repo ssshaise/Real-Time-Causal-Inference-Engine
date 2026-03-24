@@ -1,4 +1,3 @@
-# check_discovery.py
 import pandas as pd
 import networkx as nx
 from src.causal_discovery.discovery import CausalDiscoveryEngine
