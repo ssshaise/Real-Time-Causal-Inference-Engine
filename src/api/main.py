@@ -11,9 +11,7 @@ from fastapi import UploadFile, File
 import shutil
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
-
-
-from src.utils.auth_db import create_user, verify_user, save_history, get_history, delete_history, init_db
+from src.utils.auth_db import save_history, get_history, delete_history, init_db
 from src.utils.db import Database 
 from src.causal_discovery.discovery import CausalDiscoveryEngine
 from src.scm.estimator import CausalSCM
@@ -22,6 +20,7 @@ from src.simulator.simulator import CausalSimulator
 from src.llm.client import CausalLLM
 from src.api.schemas import *
 from dotenv import load_dotenv
+from src.causal_discovery.discovery import discover_causal_graph
 
 load_dotenv()
 
@@ -39,9 +38,9 @@ async def lifespan(app: FastAPI):
     print("🚀 Starting up: Creating database tables...")
     try:
         init_db() 
-        print("✅ Database tables created successfully.")
+        print("Database tables created successfully.")
     except Exception as e:
-        print(f"❌ Error creating database tables: {e}")
+        print(f"Error creating database tables: {e}")
 
     # 2. Model Loading
     global ACTIVE_MODEL
@@ -50,16 +49,16 @@ async def lifespan(app: FastAPI):
             ACTIVE_MODEL = CausalSCM.load(MODEL_PATH)
             # Fix graph cycles on load if necessary
             ACTIVE_MODEL.graph = make_acyclic(ACTIVE_MODEL.graph)
-            print("✅ Model loaded successfully from disk.")
+            print("Model loaded successfully from disk.")
         except Exception as e:
-            print(f"⚠️ Failed to load model: {e}")
+            print(f"Failed to load model: {e}")
             ACTIVE_MODEL = None
     else:
-        print("ℹ️ No model found on disk. Starting empty.")
+        print("ℹNo model found on disk. Starting empty.")
     
     yield 
     
-    print("🛑 Shutting down RCIE System...")
+    print("Shutting down RCIE System...")
 
 # --- APP DEFINITION ---
 app = FastAPI(title="RCIE System", lifespan=lifespan)
@@ -130,19 +129,6 @@ def clear_user_history(email: str):
     delete_history(email)
     return {"status": "cleared"}
 
-@app.post("/auth/signup")
-def signup(user: UserAuth):
-    success = create_user(user.email, user.password, user.full_name)
-    if not success:
-        raise HTTPException(status_code=400, detail="Email already exists")
-    return {"status": "success"}
-
-@app.post("/auth/login")
-def login(user: UserAuth):
-    if verify_user(user.email, user.password):
-        return {"status": "success", "email": user.email, "token": "fake-jwt-token-123"} 
-    raise HTTPException(status_code=401, detail="Invalid credentials")
-
 @app.post("/history/save")
 def save_analysis_history(item: HistoryItem):
     save_history(item.email, item.type, item.inputs, item.results)
@@ -154,24 +140,38 @@ def get_user_history(email: str):
 
 @app.post("/discover", response_model=GraphResponse)
 def discover_graph(req: DiscoveryRequest):
+    """
+    Endpoint for Causal Discovery.
+    Supports LLM priors and User Constraints (Human-in-the-loop).
+    """
     try:
+        # 1. Load Data
         try:
             db = Database()
             df = db.get_data("events")
         except Exception: 
+            # Fallback for local files if DB fails or is empty
+            if not os.path.exists(req.dataset_path):
+                raise HTTPException(status_code=404, detail=f"Dataset not found at {req.dataset_path}")
             df = pd.read_csv(req.dataset_path)
 
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Dataset not found")
+        # 2. Run Discovery (Using the new Wrapper)
+        # This handles the LLM logic, constraints, and algorithm selection internally.
+        graph = discover_causal_graph(
+            dataset=df,
+            method=req.method,
+            use_llm=req.use_llm,             # <--- Passing the toggle
+            user_constraints=req.user_constraints, # <--- Passing human feedback
+            domain=req.domain                # <--- Passing domain context
+        )
 
-    engine = CausalDiscoveryEngine(method=req.method, options=req.options)
-    try:
-        graph = engine.run(df)
-        
+        # 3. Post-Process
+        # Ensure DAG properties (cycles break SCMs)
         graph = make_acyclic(graph)
         
         edges = [list(e) for e in graph.edges()]
         nodes = df.columns.tolist()
+        
         return {"edges": edges, "nodes": nodes, "method": req.method}
     except Exception as e:
         logger.error(f"Discovery failed: {e}")
@@ -325,3 +325,4 @@ def explain_graph_endpoint(req: ExplanationRequest):
         g.add_edge(edge[0], edge[1])
     text = llm.explain_graph(g, context=req.context)
     return {"narrative": text}
+

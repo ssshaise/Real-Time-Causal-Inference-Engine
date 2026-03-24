@@ -16,11 +16,6 @@ class OptimizeResponse(BaseModel):
     predicted_outcome: float
     message: str
     
-class UserAuth(BaseModel):
-    email: str
-    password: str
-    full_name: str = "User"
-
 class HistoryItem(BaseModel):
     email: str
     type: str 
@@ -36,6 +31,9 @@ class SimulationResponse(BaseModel):
 class DiscoveryRequest(BaseModel):
     dataset_path: str 
     method: str = "pc"
+    use_llm: bool = True               # <--- NEW: Toggle for Ablation Study
+    domain: str = "general dataset"
+    user_constraints: Dict[str, List] = {"required": [], "forbidden": []}
     options: Optional[Dict[str, Any]] = {}
 
 class FitSCMRequest(BaseModel):
@@ -81,3 +79,6 @@ class SimulationResponse(BaseModel):
 
 class ExplanationResponse(BaseModel):
     narrative: str
+    
+class StreamRequest(BaseModel):
+    data_point: Dict[str, float]

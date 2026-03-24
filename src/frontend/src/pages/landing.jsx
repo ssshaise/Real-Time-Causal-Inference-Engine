@@ -9,29 +9,10 @@ import FeatureSlider from '../components/FeatureSlider';
 export default function Landing() {
   const navigate = useNavigate();
   
-  // AUTH STATE
-  const [userEmail, setUserEmail] = useState(null);
-  const [userName, setUserName] = useState("");
-
   useEffect(() => {
     //Force Dark Mode
     document.documentElement.classList.add('dark');
-    
-    //Check Login Status
-    const email = localStorage.getItem('user_email');
-    if (email) {
-        setUserEmail(email);
-        const namePart = email.split('@')[0];
-        setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1));
-    }
   }, []);
-
-  const handleLogout = () => {
-      localStorage.removeItem('user_email');
-      setUserEmail(null);
-      setUserName("");
-      navigate('/'); 
-  };
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -67,33 +48,9 @@ export default function Landing() {
                   <button onClick={() => scrollToSection('contact')} className="hover:text-brand-500 transition">Contact</button>
                 </div>
                 
-                {/*AUTH SWITCHER*/}
-                {userEmail ? (
-                    <div className="flex items-center gap-4 pl-4 border-l border-white/10">
-                        <div className="text-right hidden sm:block">
-                            <p className="text-xs text-gray-400">Welcome back,</p>
-                            <p className="text-sm font-bold text-brand-400">{userName}</p>
-                        </div>
-                        <button 
-                            onClick={() => navigate('/dashboard')} 
-                            className="p-2 bg-brand-600 hover:bg-brand-500 rounded-full text-white transition shadow-lg shadow-brand-500/20"
-                            title="Go to Dashboard"
-                        >
-                            <LayoutDashboard size={20} />
-                        </button>
-                        <button 
-                            onClick={handleLogout} 
-                            className="p-2 bg-white/5 hover:bg-red-500/20 hover:text-red-500 rounded-full text-gray-400 transition"
-                            title="Logout"
-                        >
-                            <LogOut size={20} />
-                        </button>
-                    </div>
-                ) : (
-                    <button onClick={() => navigate('/login')} className="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]">
-                      Login
-                    </button>
-                )}
+                <button onClick={() => navigate('/dashboard')} className="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]">
+                    Open Dashboard
+                </button>
               </div>
            </div>
         </nav>
@@ -120,10 +77,10 @@ export default function Landing() {
            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="flex flex-col sm:flex-row gap-4 justify-center mb-24">
               {/*SMART BUTTON*/}
               <button 
-                onClick={() => navigate(userEmail ? '/dashboard' : '/login')} 
+                onClick={() => navigate('/dashboard')} 
                 className="group bg-brand-600 hover:bg-brand-500 text-white px-8 py-4 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:-translate-y-1"
               >
-                {userEmail ? "Open Dashboard" : "Launch Discovery"} 
+                Open Dashboard
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform"/>
               </button>
               

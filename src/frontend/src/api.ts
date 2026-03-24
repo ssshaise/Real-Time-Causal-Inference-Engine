@@ -1,24 +1,22 @@
 import axios from 'axios';
 
-// 1. Better URL handling (removes accidental double slashes)
-const API_URL = (import.meta.env.VITE_API_URL || "https://ssshaise-rcie.hf.space").replace(/\/$/, "");
+//const API_URL = (import.meta.env.VITE_API_URL || "https://ssshaise-rcie.hf.space").replace(/\/$/, "");
+const API_URL = "http://127.0.0.1:8000";
 
 type Edge = string[];
-
-// Helper to get token (if you implement protected routes later)
-const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 export const api = {
     // --- CORE FUNCTIONS ---
 
-    discover: async (datasetPath: string, method: string) => {
+    discover: async (
+        datasetPath: string, method: string,
+        useLLM: boolean = true,         
+        domain: string = "general",     
+        userConstraints: any = {}
+    ) => {
         try {
             const res = await axios.post(`${API_URL}/discover`, 
-                { dataset_path: datasetPath, method },
-                { headers: getAuthHeaders() }
+                { dataset_path: datasetPath, method, use_llm: useLLM, domain: domain, user_constraints: userConstraints }
             );
             return res.data;
         } catch (error) {
@@ -86,33 +84,6 @@ export const api = {
         // Axios automatically sets Content-Type to multipart/form-data for FormData
         const res = await axios.post(`${API_URL}/upload`, formData);
         return res.data;
-    },
-
-    // --- AUTHENTICATION ---
-
-    login: async (email: string, password: string) => {
-        try {
-            const res = await axios.post(`${API_URL}/auth/login`, { email, password });
-            // Automatically save token on success
-            if (res.data.token) {
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("userEmail", email);
-            }
-            return res.data;
-        } catch (error) {
-            throw new Error("Invalid email or password");
-        }
-    },
-
-    signup: async (email: string, password: string, name: string) => {
-        const res = await axios.post(`${API_URL}/auth/signup`, { email, password, full_name: name });
-        return res.data;
-    },
-
-    logout: () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("userEmail");
-        window.location.reload();
     },
 
     // --- HISTORY ---

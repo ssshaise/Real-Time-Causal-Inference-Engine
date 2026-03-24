@@ -92,6 +92,60 @@ class CausalSCM:
             
             mlflow.log_artifact(temp_path, artifact_path="model")
             logger.info(f"Training complete. Loss: {avg_loss:.4f}. Logged to MLflow.")
+            
+    def update(self, new_data: pd.DataFrame, lr=0.001):
+        """
+        Performs a single gradient descent step on new streaming data.
+        This enables 'Online Learning' without retraining from scratch.
+        """
+        if not self.is_fitted:
+            logger.warning("Attempted to update an unfitted model. Ignoring.")
+            return 0.0
+
+        # 1. Normalize new data using the ORIGINAL training stats
+        # (Crucial: We must use the same scale as the model was trained on)
+        data_norm = (new_data - self.data_stats['mean']) / self.data_stats['std']
+        
+        total_loss = 0.0
+        count = 0
+
+        # 2. Update each node's neural network
+        for node in self.graph.nodes():
+            # Skip nodes that don't have parents (roots) or weren't trained
+            if node not in self.models:
+                continue
+
+            parents = list(self.graph.predecessors(node))
+            if not parents:
+                continue
+
+            model = self.models[node]
+            model.train() # Switch to training mode
+
+            # Prepare Tensors
+            X_val = data_norm[parents].fillna(0).values
+            y_val = data_norm[[node]].fillna(0).values
+
+            X = torch.tensor(X_val, dtype=torch.float32)
+            y = torch.tensor(y_val, dtype=torch.float32)
+
+            # 3. Optimization Step
+            # We initialize a fresh optimizer for this micro-batch
+            optimizer = optim.Adam(model.parameters(), lr=lr)
+            criterion = nn.MSELoss()
+
+            optimizer.zero_grad()
+            preds = model(X)
+            loss = criterion(preds, y)
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+            count += 1
+        
+        avg_loss = total_loss / max(1, count)
+        logger.info(f"Streaming update complete. Loss: {avg_loss:.5f}")
+        return avg_loss
 
     def predict_node(self, node: str, parent_values: pd.DataFrame) -> np.ndarray:
         """

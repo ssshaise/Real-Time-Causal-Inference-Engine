@@ -1,7 +1,6 @@
 import os
 import json
 from datetime import datetime
-from passlib.context import CryptContext
 from sqlalchemy import create_engine, Column, String, Integer, Text, desc
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
@@ -29,16 +28,6 @@ else:
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Password Hashing Setup
-pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
-
-
-class User(Base):
-    __tablename__ = "users"
-    email = Column(String, primary_key=True, index=True)
-    password_hash = Column(String)
-    full_name = Column(String)
-
 class History(Base):
     __tablename__ = "history"
     id = Column(Integer, primary_key=True, index=True)
@@ -53,38 +42,6 @@ def init_db():
     """Creates tables if they don't exist. Called by main.py on startup."""
     Base.metadata.create_all(bind=engine)
 
-def create_user(email, password, full_name):
-    session = SessionLocal()
-    try:
-        # Check if user already exists
-        existing_user = session.query(User).filter(User.email == email).first()
-        if existing_user:
-            return False
-        
-        # Hash password and save
-        hashed_pw = pwd_context.hash(password)
-        new_user = User(email=email, password_hash=hashed_pw, full_name=full_name)
-        session.add(new_user)
-        session.commit()
-        return True
-    except Exception as e:
-        print(f"Error creating user: {e}")
-        session.rollback()
-        return False
-    finally:
-        session.close()
-
-def verify_user(email, password):
-    session = SessionLocal()
-    try:
-        user = session.query(User).filter(User.email == email).first()
-        if not user:
-            return False
-        return pwd_context.verify(password, user.password_hash)
-    except Exception:
-        return False
-    finally:
-        session.close()
 
 def save_history(email, analysis_type, inputs, results):
     session = SessionLocal()
